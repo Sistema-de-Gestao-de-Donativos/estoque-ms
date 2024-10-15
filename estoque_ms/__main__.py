@@ -6,7 +6,7 @@ from .settings import Settings
 def main() -> None:
     settings = Settings()  # type: ignore
     uvicorn.run(
-        app="users_ms:create_app",
+        app="estoque_ms:create_app",
         factory=True,
         host=settings.HOST,
         port=settings.PORT,
