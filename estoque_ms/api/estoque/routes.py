@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter
 
-from . import controller, models, schemas
+from . import controller, models
 
 router = APIRouter(prefix="/stock", tags=["MS de Estoque"])
 
@@ -20,3 +20,6 @@ def entrada_estoque_cd(codCd: int, body) -> models.StockItemDAO:
 @router.delete("/{codCd}", status_code=204)
 def saida_estoque_cd(codCd: int, codBarras: str, qtd: int) -> None:
     controller.saida_estoque_cd(codCd, codBarras, qtd)
+
+
+# pegar a quantidade de um dado item, dado um cd
