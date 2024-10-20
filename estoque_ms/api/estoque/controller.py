@@ -14,7 +14,9 @@ def get_estoque_atual_cd(codCd: int) -> List[StockItemDAO]:
     return [StockItemDAO(**item) for item in items]
 
 
-def entrada_estoque_cd(codCd: int, items: List[StockItem]):
+def entrada_estoque_cd(codCd: int, items: List[StockItem]) -> bool:
+    if len(items) == 0:
+        raise HTTPException(status_code=400, detail="No items to add")
     for item in items:
         item_dao = StockItemDAO(**item.model_dump(), codCd=codCd)
         collection = get_collection(StockItemDAO.collection_name())
@@ -23,7 +25,15 @@ def entrada_estoque_cd(codCd: int, items: List[StockItem]):
         except DuplicateKeyError:
             raise HTTPException(status_code=409, detail="Item already exists in stock")
 
-        return True
+    return True
+
+
+def get_qtd_item_cd(codCd: int, codBarras: str) -> int:
+    collection = get_collection(StockItemDAO.collection_name())
+    item = collection.find_one({"codCd": codCd, "codBarras": codBarras})
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return item["qtdAtual"]
 
 
 def saida_estoque_cd(codCd: int, codBarras: str, qtd: int) -> None:

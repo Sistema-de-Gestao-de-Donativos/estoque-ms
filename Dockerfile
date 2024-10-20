@@ -8,4 +8,4 @@ RUN pip install --upgrade pip
 RUN --mount=type=ssh pip install .
 
 FROM base as prod
-CMD [ "python", "-m", "estoques_ms"]
+CMD [ "python", "-m", "estoque_ms"]
