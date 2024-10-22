@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: "users_ms"
+    container_name: "estoque_ms"
     build:
       context: ./
       target: prod
