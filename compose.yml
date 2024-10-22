@@ -8,17 +8,18 @@ services:
       - .env
     ports:
       - ${PORT}:${PORT}
-      - 5678:5678
+
     depends_on:
-      - mongodb
+      - db
     environment:
       MONGODB_URI: "mongodb://mongodb:27017"
 
-  mongodb:
-    image: mongo:latest
-    container_name: "mongodb"
+  db:
+    container_name: mongodb
+    image: mongo
+    restart: always
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
       - mongo_data:/data/db
 
