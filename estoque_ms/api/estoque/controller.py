@@ -1,11 +1,10 @@
 from typing import List
 
 from fastapi import HTTPException
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from ..utils import get_collection
 from .models import StockItemDAO
-from .schemas import StockItem
 
 
 def get_estoque_atual_cd(codCd: int) -> List[StockItemDAO]:
@@ -14,18 +13,30 @@ def get_estoque_atual_cd(codCd: int) -> List[StockItemDAO]:
     return [StockItemDAO(**item) for item in items]
 
 
-def entrada_estoque_cd(codCd: int, items: List[StockItem]) -> bool:
-    if len(items) == 0:
+def entrada_estoque_cd(codCd: int, items: List[StockItemDAO]) -> List[StockItemDAO]:
+    if not items:
         raise HTTPException(status_code=400, detail="No items to add")
-    for item in items:
-        item_dao = StockItemDAO(**item.model_dump(), codCd=codCd)
-        collection = get_collection(StockItemDAO.collection_name())
-        try:
-            collection.insert_one(item_dao.model_dump(by_alias=True))
-        except DuplicateKeyError:
-            raise HTTPException(status_code=409, detail="Item already exists in stock")
 
-    return True
+    collection = get_collection(StockItemDAO.collection_name())
+
+    items_dict = [item.model_dump(by_alias=True) for item in items]
+
+    try:
+        collection.insert_many(items_dict)
+    except (DuplicateKeyError, BulkWriteError) as e:
+        if isinstance(e, DuplicateKeyError):
+            raise HTTPException(
+                status_code=409,
+                detail=f"One or more items already exist in stock details: {e.details}",
+            )
+
+        if isinstance(e, BulkWriteError):
+            raise HTTPException(
+                status_code=400,
+                detail=f"One or more items already exist in stock details: {e.details}",
+            )
+
+    return items
 
 
 def get_qtd_item_cd(codCd: int, codBarras: str) -> int:

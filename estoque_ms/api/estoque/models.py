@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from bson import ObjectId
+from bson.objectid import ObjectId
 from pydantic import Field
 from pymongo import IndexModel
 
@@ -18,6 +18,5 @@ class StockItemDAO(schemas.StockItem):
     @classmethod
     def indexes(cls) -> list[IndexModel]:
         return [
-            IndexModel("nome"),
-            IndexModel("codCd"),
+            IndexModel([("nome", 1), ("codCd", 1)], unique=True),
         ]

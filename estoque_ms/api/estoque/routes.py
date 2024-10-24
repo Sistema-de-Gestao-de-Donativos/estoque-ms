@@ -12,14 +12,13 @@ def get_estoque_atual_cd(codCd: int) -> List[models.StockItemDAO]:
     return controller.get_estoque_atual_cd(codCd)
 
 
-@router.post("/{codCd}", status_code=201, response_model=models.StockItemDAO)
+@router.post("/{codCd}", status_code=201, response_model=List[models.StockItemDAO])
 def entrada_estoque_cd(codCd: int, input_item: list[schemas.InputStockItem]):
-    items = []
-    for item in input_item:
-        items.append(models.StockItemDAO(codCd=codCd, **item.model_dump()))
+    items = [
+        models.StockItemDAO(codCd=codCd, **item.model_dump()) for item in input_item
+    ]
 
-    controller.entrada_estoque_cd(codCd, items)
-    return items
+    return controller.entrada_estoque_cd(codCd, items)
 
 
 @router.delete("/{codCd}", status_code=204)
