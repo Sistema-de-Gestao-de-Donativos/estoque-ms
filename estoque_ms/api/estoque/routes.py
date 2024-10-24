@@ -26,6 +26,6 @@ def saida_estoque_cd(codCd: int, codBarras: str, qtd: int) -> None:
     controller.saida_estoque_cd(codCd, codBarras, qtd)
 
 
-@router.get("/{codCd}/{codBarras}", status_code=200)
-def get_qtd_item_cd(codCd: int, codBarras: str) -> int:
-    return controller.get_qtd_item_cd(codCd, codBarras)
+@router.get("/{codCd}/{nome}", status_code=200)
+def get_item_cd(codCd: int, nome: str) -> List[models.StockItemDAO]:
+    return controller.get_item_cd(codCd, nome)

@@ -39,14 +39,6 @@ def entrada_estoque_cd(codCd: int, items: List[StockItemDAO]) -> List[StockItemD
     return items
 
 
-def get_qtd_item_cd(codCd: int, codBarras: str) -> int:
-    collection = get_collection(StockItemDAO.collection_name())
-    item = collection.find_one({"codCd": codCd, "codBarras": codBarras})
-    if item is None:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return item["qtdAtual"]
-
-
 def saida_estoque_cd(codCd: int, codBarras: str, qtd: int) -> None:
     collection = get_collection(StockItemDAO.collection_name())
     result = collection.update_one(
@@ -57,3 +49,10 @@ def saida_estoque_cd(codCd: int, codBarras: str, qtd: int) -> None:
         raise HTTPException(
             status_code=404, detail="Item not found or insufficient quantity"
         )
+
+
+def get_item_cd(codCd: int, nome: str) -> List[StockItemDAO]:
+    collection = get_collection(StockItemDAO.collection_name())
+    items = collection.find({"codCd": codCd, "nome": nome})
+
+    return [StockItemDAO(**item) for item in items]
