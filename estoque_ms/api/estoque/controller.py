@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import HTTPException
-from pymongo.errors import BulkWriteError, DuplicateKeyError
+from pymongo.errors import DuplicateKeyError
 
 from ..utils import get_collection
 from .models import StockItemDAO
@@ -21,22 +21,20 @@ def entrada_estoque_cd(codCd: int, items: List[StockItemDAO]) -> List[StockItemD
 
     items_dict = [item.model_dump(by_alias=True) for item in items]
 
-    try:
-        collection.insert_many(items_dict)
-    except (DuplicateKeyError, BulkWriteError) as e:
-        if isinstance(e, DuplicateKeyError):
-            raise HTTPException(
-                status_code=409,
-                detail=f"One or more items already exist in stock details: {e.details}",
+    # TODO: fix concurrency issue
+    for item in items_dict:
+        try:
+            collection.insert_one(item)
+        except DuplicateKeyError:
+            collection.update_one(
+                {"codCd": codCd, "nome": item["nome"]},
+                {"$inc": {"quantidade": item["quantidade"]}},
             )
 
-        if isinstance(e, BulkWriteError):
-            raise HTTPException(
-                status_code=400,
-                detail=f"One or more items already exist in stock details: {e.details}",
-            )
-
-    return items
+    updated_items = collection.find(
+        {"codCd": codCd, "nome": {"$in": [item["nome"] for item in items_dict]}}
+    )
+    return [StockItemDAO(**item) for item in updated_items]
 
 
 def saida_estoque_cd(codCd: int, codBarras: str, qtd: int) -> None:

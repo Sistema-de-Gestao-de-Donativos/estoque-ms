@@ -9,9 +9,6 @@ class StockItem(BaseModel):
     nome: str = Field(..., description="CPF/CNPJ do doador dos itens.")
     quantidade: int = Field(..., description="Quantidade ainda disponível no estoque.")
     unidade: str = Field(..., description="Unidade de medida do item.")
-    dataValidade: Optional[datetime] = Field(
-        None, description="Data de validade do item."
-    )
     categoria: str = Field(..., description="Categoria do item.")
 
 
