@@ -22,8 +22,8 @@ def entrada_estoque_cd(codCd: int, input_item: list[schemas.InputStockItem]):
 
 
 @router.delete("/{codCd}", status_code=204)
-def saida_estoque_cd(codCd: int, codBarras: str, qtd: int) -> None:
-    controller.saida_estoque_cd(codCd, codBarras, qtd)
+def saida_estoque_cd(codCd: int, nome: str, qtd: int) -> None:
+    controller.saida_estoque_cd(codCd, nome, qtd)
 
 
 @router.get("/{codCd}/{nome}", status_code=200)

@@ -37,10 +37,10 @@ def entrada_estoque_cd(codCd: int, items: List[StockItemDAO]) -> List[StockItemD
     return [StockItemDAO(**item) for item in updated_items]
 
 
-def saida_estoque_cd(codCd: int, codBarras: str, qtd: int) -> None:
+def saida_estoque_cd(codCd: int, nome: str, qtd: int) -> None:
     collection = get_collection(StockItemDAO.collection_name())
     result = collection.update_one(
-        {"codCd": codCd, "codBarras": codBarras, "qtdAtual": {"$gte": qtd}},
+        {"codCd": codCd, "nome": nome, "qtdAtual": {"$gte": qtd}},
         {"$inc": {"qtdAtual": -qtd}},
     )
     if result.matched_count == 0:
