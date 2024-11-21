@@ -40,8 +40,8 @@ def entrada_estoque_cd(codCd: int, items: List[StockItemDAO]) -> List[StockItemD
 def saida_estoque_cd(codCd: int, nome: str, qtd: int) -> None:
     collection = get_collection(StockItemDAO.collection_name())
     result = collection.update_one(
-        {"codCd": codCd, "nome": nome, "qtdAtual": {"$gte": qtd}},
-        {"$inc": {"qtdAtual": -qtd}},
+        {"codCd": codCd, "nome": nome, "quantidade": {"$gte": qtd}},
+        {"$inc": {"quantidade": -qtd}},
     )
     if result.matched_count == 0:
         raise HTTPException(
