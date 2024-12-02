@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     MONGO_DB_NAME: str = "estoque-ms"
     PORT: int = 8005
     API_SECRET: str = "super-secret"
+    JWT_PUBLIC_KEY: str = "example_key.pub"
 
     class Config:
         env_file = ".env"
